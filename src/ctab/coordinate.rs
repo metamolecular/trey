@@ -1,22 +1,20 @@
 use std::fmt;
 
+use super::Decimal;
+
 #[derive(Default, PartialEq, Debug, Clone)]
 pub struct Coordinate {
-    pub x: f32,
-    pub y: f32,
-    pub z: f32,
+    pub x: Decimal,
+    pub y: Decimal,
+    pub z: Decimal,
 }
 
 impl Coordinate {
     pub fn new(x: f32, y: f32, z: f32) -> Self {
-        Self { x, y, z }
-    }
-
-    pub fn minus(&self, other: &Self) -> Self {
         Self {
-            x: self.x - other.x,
-            y: self.y - other.y,
-            z: self.z - other.z,
+            x: x.into(),
+            y: y.into(),
+            z: z.into()
         }
     }
 }

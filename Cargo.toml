@@ -9,6 +9,7 @@ homepage = "https://github.com/metamolecular/trey/"
 readme = "README.md"
 
 [dependencies]
+lyn = "0.1.0"
 
 [dev-dependencies]
 pretty_assertions = "1.2.1"

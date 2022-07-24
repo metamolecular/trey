@@ -1,5 +1,6 @@
 #[derive(Debug, PartialEq)]
 pub enum Error {
+    DecimalFormat,
     IdFormat,
     InvalidCharge,
     InvalidElement,
