@@ -1,8 +1,6 @@
 use std::collections::HashMap;
 
-use super::{
-    Atom, Bond, Collection, Error, Index, Substructure, SubstructureKind,
-};
+use super::{Atom, Bond, Collection, Error, Index, Substructure, SubstructureKind};
 
 #[derive(Debug, PartialEq, Clone, Default)]
 pub struct ConnectionTable {
@@ -82,8 +80,7 @@ impl ConnectionTable {
             };
 
             for index in indexes.iter_mut() {
-                let replacement =
-                    atom_indexes.get_mut(&index).ok_or(Error::MissingAtom)?;
+                let replacement = atom_indexes.get_mut(&index).ok_or(Error::MissingAtom)?;
 
                 std::mem::swap(index, replacement);
             }
@@ -91,8 +88,7 @@ impl ConnectionTable {
 
         for substructure in self.substructures.iter_mut() {
             for atom in substructure.atoms.iter_mut() {
-                let mut index =
-                    atom_indexes.get(&atom).ok_or(Error::MissingAtom)?.clone();
+                let mut index = atom_indexes.get(&atom).ok_or(Error::MissingAtom)?.clone();
                 std::mem::swap(atom, &mut index);
             }
 
@@ -368,10 +364,7 @@ mod reindex {
     #[test]
     fn duplicate_atom() {
         let mut ctab = ConnectionTable {
-            atoms: vec![
-                Atom::any(1, 0., 0.).unwrap(),
-                Atom::any(1, 0., 0.).unwrap(),
-            ],
+            atoms: vec![Atom::any(1, 0., 0.).unwrap(), Atom::any(1, 0., 0.).unwrap()],
             ..Default::default()
         };
 
@@ -432,10 +425,7 @@ mod reindex {
         assert_eq!(
             ctab,
             ConnectionTable {
-                atoms: vec![
-                    Atom::any(1, 0., 0.).unwrap(),
-                    Atom::any(2, 0., 0.).unwrap(),
-                ],
+                atoms: vec![Atom::any(1, 0., 0.).unwrap(), Atom::any(2, 0., 0.).unwrap(),],
                 bonds: vec![Bond::single(1, 2, 1).unwrap()],
                 ..Default::default()
             }
@@ -445,9 +435,7 @@ mod reindex {
     #[test]
     fn collection_absolute_stereo_missing_atom() {
         let mut ctab = ConnectionTable {
-            collections: vec![Collection::AbsoluteStereo(vec!["42"
-                .try_into()
-                .unwrap()])],
+            collections: vec![Collection::AbsoluteStereo(vec!["42".try_into().unwrap()])],
             ..Default::default()
         };
 
@@ -458,9 +446,7 @@ mod reindex {
     fn collection_absolute_stereo() {
         let mut ctab = ConnectionTable {
             atoms: vec![Atom::any(42, 0., 0.).unwrap()],
-            collections: vec![Collection::AbsoluteStereo(vec!["42"
-                .try_into()
-                .unwrap()])],
+            collections: vec![Collection::AbsoluteStereo(vec!["42".try_into().unwrap()])],
             ..Default::default()
         };
 
@@ -470,9 +456,7 @@ mod reindex {
             ctab,
             ConnectionTable {
                 atoms: vec![Atom::any(1, 0., 0.).unwrap()],
-                collections: vec![Collection::AbsoluteStereo(vec!["1"
-                    .try_into()
-                    .unwrap()])],
+                collections: vec![Collection::AbsoluteStereo(vec!["1".try_into().unwrap()])],
                 ..Default::default()
             }
         )
@@ -549,10 +533,7 @@ mod reindex {
     #[test]
     fn substructure_missing_crossing_bond() {
         let mut ctab = ConnectionTable {
-            atoms: vec![
-                Atom::any(1, 0., 0.).unwrap(),
-                Atom::any(2, 0., 0.).unwrap(),
-            ],
+            atoms: vec![Atom::any(1, 0., 0.).unwrap(), Atom::any(2, 0., 0.).unwrap()],
             bonds: vec![Bond::single(22, 1, 2).unwrap()],
             substructures: vec![Substructure {
                 atoms: vec!["1".try_into().unwrap(), "2".try_into().unwrap()],
@@ -592,21 +573,13 @@ mod reindex {
         assert_eq!(
             ctab,
             ConnectionTable {
-                atoms: vec![
-                    Atom::any(1, 0., 0.).unwrap(),
-                    Atom::any(2, 0., 0.).unwrap(),
-                ],
+                atoms: vec![Atom::any(1, 0., 0.).unwrap(), Atom::any(2, 0., 0.).unwrap(),],
                 bonds: vec![Bond::single(1, 2, 1).unwrap(),],
                 substructures: vec![Substructure {
                     index: "2".try_into().unwrap(),
-                    atoms: vec![
-                        "2".try_into().unwrap(),
-                        "1".try_into().unwrap()
-                    ],
+                    atoms: vec!["2".try_into().unwrap(), "1".try_into().unwrap()],
                     kind: SubstructureKind::Superatom(Superatom {
-                        crossing_bonds: vec![
-                            CrossingBond::new(1, 0., 0.).unwrap(),
-                        ],
+                        crossing_bonds: vec![CrossingBond::new(1, 0., 0.).unwrap(),],
                         ..Default::default()
                     }),
                 }],

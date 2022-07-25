@@ -1,6 +1,6 @@
 use std::fmt;
 
-use super::{AtomKind, AttachmentPoint, Charge, Coordinate, Error, Index};
+use super::{AtomKind, AttachmentPoint, Charge, Coordinate, Error, Index, Valence};
 
 #[derive(PartialEq, Debug, Default, Clone)]
 pub struct Atom {
@@ -9,7 +9,7 @@ pub struct Atom {
     pub charge: Charge,
     pub coordinate: Coordinate,
     pub atom_atom_mapping: Option<Index>,
-    pub valence: Option<usize>,
+    pub valence: Option<Valence>,
     pub mass: Option<usize>,
     pub attachment_point: Option<AttachmentPoint>,
 }
@@ -36,10 +36,7 @@ impl fmt::Display for Atom {
                 None => "".to_string(),
             },
             match &self.valence {
-                Some(valence) => match valence {
-                    0 => " VAL=-1".to_string(),
-                    _ => format!(" VAL={}", valence),
-                },
+                Some(valence) => format!(" VAL={}", valence),
                 None => "".to_string(),
             },
             match &self.attachment_point {
@@ -73,8 +70,10 @@ impl Atom {
     }
 
     pub fn implicit_hydrogens(&self, bond_order_sum: usize) -> Option<usize> {
-        if let Some(custom) = &self.valence {
-            if &bond_order_sum <= custom {
+        if let Some(valence) = &self.valence {
+            let custom = u8::from(valence) as usize;
+
+            if bond_order_sum <= custom {
                 return Some(custom - bond_order_sum);
             } else {
                 return Some(0);
@@ -82,12 +81,10 @@ impl Atom {
         }
 
         let element = match &self.kind {
-            AtomKind::Element(element) => {
-                match element.isoelectronic(&self.charge) {
-                    Some(element) => element,
-                    None => return None,
-                }
-            }
+            AtomKind::Element(element) => match element.isoelectronic(&self.charge) {
+                Some(element) => element,
+                None => return None,
+            },
             _ => return None,
         };
 
@@ -105,7 +102,7 @@ impl Atom {
         &mut self,
         virtual_hydrogens: usize,
         bond_order_sum: usize,
-    ) {
+    ) -> Result<(), Error> {
         if let AtomKind::Element(element) = &self.kind {
             if let Some(iso) = element.isoelectronic(&self.charge) {
                 if let Some(default_valences) = iso.default_valences() {
@@ -113,20 +110,24 @@ impl Atom {
 
                     for default_valence in default_valences {
                         if *default_valence as usize == valence {
-                            return;
+                            return Ok(());
                         }
                     }
                 } else if virtual_hydrogens == 0 {
-                    return;
+                    return Ok(());
                 }
             } else {
-                return;
+                return Ok(());
             }
         } else if virtual_hydrogens == 0 {
-            return;
+            return Ok(());
         }
 
-        self.valence.replace(virtual_hydrogens + bond_order_sum);
+        let new_valence = Valence::try_from(virtual_hydrogens + bond_order_sum)?;
+
+        self.valence.replace(new_valence);
+
+        Ok(())
     }
 }
 
@@ -220,7 +221,7 @@ mod to_string {
     #[test]
     fn valence_equals_zero() {
         let atom = Atom {
-            valence: Some(0),
+            valence: Some(Valence::try_from(0).unwrap()),
             ..Default::default()
         };
 
@@ -230,7 +231,7 @@ mod to_string {
     #[test]
     fn valence_exceeds_zero() {
         let atom = Atom {
-            valence: Some(3),
+            valence: Some(Valence::try_from(3).unwrap()),
             ..Default::default()
         };
 
@@ -260,9 +261,7 @@ mod to_string {
     #[test]
     fn rgroups() {
         let atom = Atom {
-            kind: AtomKind::Rgroup(
-                vec!["13".try_into().unwrap(), "42".try_into().unwrap()].into(),
-            ),
+            kind: AtomKind::Rgroup(vec!["13".try_into().unwrap(), "42".try_into().unwrap()].into()),
             ..Default::default()
         };
 
@@ -277,7 +276,7 @@ mod to_string {
             charge: Charge::try_from(1).unwrap(),
             coordinate: Coordinate::new(1.1, 2.2, 3.3),
             atom_atom_mapping: Some(Index::default()),
-            valence: Some(3),
+            valence: Some(Valence::try_from(3).unwrap()),
             mass: Some(12),
             attachment_point: Some(AttachmentPoint::First),
             ..Default::default()
@@ -309,7 +308,7 @@ mod implicit_hydrogens {
     #[test]
     fn subvalent_any_with_custom() {
         let atom = Atom {
-            valence: Some(1),
+            valence: Some(Valence::try_from(1).unwrap()),
             ..Default::default()
         };
 
@@ -319,7 +318,7 @@ mod implicit_hydrogens {
     #[test]
     fn homovalent_any_with_custom() {
         let atom = Atom {
-            valence: Some(1),
+            valence: Some(Valence::try_from(1).unwrap()),
             ..Default::default()
         };
 
@@ -329,7 +328,7 @@ mod implicit_hydrogens {
     #[test]
     fn supervalent_any_with_custom() {
         let atom = Atom {
-            valence: Some(1),
+            valence: Some(Valence::try_from(1).unwrap()),
             ..Default::default()
         };
 
@@ -360,7 +359,7 @@ mod implicit_hydrogens {
     fn subvalent_element_no_defaults_custom() {
         let atom = Atom {
             kind: AtomKind::Element(Element::Sn),
-            valence: Some(2),
+            valence: Some(Valence::try_from(2).unwrap()),
             ..Default::default()
         };
 
@@ -371,7 +370,7 @@ mod implicit_hydrogens {
     fn supervalent_element_no_defaults_custom() {
         let atom = Atom {
             kind: AtomKind::Element(Element::Sn),
-            valence: Some(2),
+            valence: Some(Valence::try_from(2).unwrap()),
             ..Default::default()
         };
 
@@ -487,9 +486,9 @@ mod set_valence {
             ..Default::default()
         };
 
-        atom.set_valence(2, 2);
+        atom.set_valence(2, 2).unwrap();
 
-        assert_eq!(atom.valence, Some(4))
+        assert_eq!(atom.valence, Some(Valence::try_from(4).unwrap()))
     }
 
     #[test]
@@ -500,7 +499,7 @@ mod set_valence {
             ..Default::default()
         };
 
-        atom.set_valence(1, 1);
+        atom.set_valence(1, 1).unwrap();
 
         assert_eq!(atom.valence, None)
     }
@@ -513,7 +512,7 @@ mod set_valence {
             ..Default::default()
         };
 
-        atom.set_valence(0, 0);
+        atom.set_valence(0, 0).unwrap();
 
         assert_eq!(atom.valence, None)
     }
@@ -524,7 +523,7 @@ mod set_valence {
             ..Default::default()
         };
 
-        atom.set_valence(0, 2);
+        atom.set_valence(0, 2).unwrap();
 
         assert_eq!(atom.valence, None)
     }
@@ -536,9 +535,9 @@ mod set_valence {
             ..Default::default()
         };
 
-        atom.set_valence(1, 2);
+        atom.set_valence(1, 2).unwrap();
 
-        assert_eq!(atom.valence, Some(3))
+        assert_eq!(atom.valence, Some(Valence::try_from(3).unwrap()))
     }
 
     #[test]
@@ -548,7 +547,7 @@ mod set_valence {
             ..Default::default()
         };
 
-        atom.set_valence(0, 1);
+        atom.set_valence(0, 1).unwrap();
 
         assert_eq!(atom.valence, None)
     }
@@ -560,7 +559,7 @@ mod set_valence {
             ..Default::default()
         };
 
-        atom.set_valence(2, 2);
+        atom.set_valence(2, 2).unwrap();
 
         assert_eq!(atom.valence, None)
     }
@@ -572,9 +571,9 @@ mod set_valence {
             ..Default::default()
         };
 
-        atom.set_valence(2, 1);
+        atom.set_valence(2, 1).unwrap();
 
-        assert_eq!(atom.valence, Some(3))
+        assert_eq!(atom.valence, Some(Valence::try_from(3).unwrap()))
     }
 
     #[test]
@@ -584,8 +583,8 @@ mod set_valence {
             ..Default::default()
         };
 
-        atom.set_valence(0, 0);
+        atom.set_valence(0, 0).unwrap();
 
-        assert_eq!(atom.valence, Some(0))
+        assert_eq!(atom.valence, Some(Valence::try_from(0).unwrap()))
     }
 }

@@ -11,10 +11,7 @@ impl convert::TryFrom<&str> for Name {
     fn try_from(value: &str) -> Result<Self, Self::Error> {
         if value.len() > 80 {
             return Err(Error::StringTooLong);
-        } else if value.contains("$RXN")
-            || value.contains("$MDL")
-            || value.contains("$$$$")
-        {
+        } else if value.contains("$RXN") || value.contains("$MDL") || value.contains("$$$$") {
             return Err(Error::ReservedTag);
         } else {
             Ok(Self(value.to_owned()))

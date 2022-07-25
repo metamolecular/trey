@@ -14,7 +14,7 @@ impl Coordinate {
         Self {
             x: x.into(),
             y: y.into(),
-            z: z.into()
+            z: z.into(),
         }
     }
 }

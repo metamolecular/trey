@@ -4,6 +4,7 @@ pub enum Error {
     IdFormat,
     InvalidCharge,
     InvalidElement,
+    InvalidValence,
     MissingAtom,
     DuplicateAtom,
     DuplicateBond,

@@ -14,16 +14,18 @@ impl TryFrom<&str> for Decimal {
         let mut scanner = Scanner::new(value);
 
         match decimal(&mut scanner) {
-            Ok(entered) => if entered {
-                if scanner.is_done() {
-                    Ok(Self(value.into()))
+            Ok(entered) => {
+                if entered {
+                    if scanner.is_done() {
+                        Ok(Self(value.into()))
+                    } else {
+                        Err(Error::DecimalFormat)
+                    }
                 } else {
                     Err(Error::DecimalFormat)
                 }
-            } else {
-                Err(Error::DecimalFormat)
-            },
-            Err(err) => Err(err)
+            }
+            Err(err) => Err(err),
         }
     }
 }
@@ -75,8 +77,8 @@ fn sign(scanner: &mut Scanner) -> Result<bool, Error> {
             scanner.pop();
 
             true
-        },
-        _ => false
+        }
+        _ => false,
     })
 }
 
@@ -125,7 +127,7 @@ fn digits(scanner: &mut Scanner) -> Result<bool, Error> {
     Ok(if digit(scanner)? {
         loop {
             if !digit(scanner)? {
-                break true
+                break true;
             }
         }
     } else {
@@ -145,8 +147,8 @@ fn nonzero_digit(scanner: &mut Scanner) -> Result<bool, Error> {
             scanner.pop();
 
             true
-        },
-        _ => false
+        }
+        _ => false,
     })
 }
 
@@ -162,8 +164,8 @@ fn dot(scanner: &mut Scanner) -> Result<bool, Error> {
 
 #[cfg(test)]
 pub mod decimal {
-    use pretty_assertions::assert_eq;
     use super::*;
+    use pretty_assertions::assert_eq;
 
     #[test]
     fn alpha() {
@@ -266,8 +268,8 @@ pub mod decimal {
 
 #[cfg(test)]
 pub mod float_from_str {
-    use pretty_assertions::assert_eq;
     use super::*;
+    use pretty_assertions::assert_eq;
 
     #[test]
     fn alpha() {
@@ -281,14 +283,17 @@ pub mod float_from_str {
 
     #[test]
     fn valid() {
-        assert_eq!(Decimal::try_from("+3.14159"), Ok(Decimal("+3.14159".into())))
+        assert_eq!(
+            Decimal::try_from("+3.14159"),
+            Ok(Decimal("+3.14159".into()))
+        )
     }
 }
 
 #[cfg(test)]
 pub mod f32_from_float {
-    use pretty_assertions::assert_eq;
     use super::*;
+    use pretty_assertions::assert_eq;
 
     #[test]
     fn test() {
@@ -300,8 +305,8 @@ pub mod f32_from_float {
 
 #[cfg(test)]
 pub mod float_from_f32 {
-    use pretty_assertions::assert_eq;
     use super::*;
+    use pretty_assertions::assert_eq;
 
     #[test]
     fn test() {
@@ -311,8 +316,8 @@ pub mod float_from_f32 {
 
 #[cfg(test)]
 pub mod f64_from_float {
-    use pretty_assertions::assert_eq;
     use super::*;
+    use pretty_assertions::assert_eq;
 
     #[test]
     fn test() {

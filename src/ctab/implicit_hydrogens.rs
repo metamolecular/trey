@@ -2,7 +2,9 @@ use super::{Atom, AtomKind, Charge, Element};
 
 pub fn implicit_hydrogens(atom: &Atom, bond_order_sum: usize) -> Option<usize> {
     if let Some(custom) = &atom.valence {
-        if &bond_order_sum <= custom {
+        let custom = usize::from(custom);
+
+        if bond_order_sum <= custom {
             return Some(custom - bond_order_sum);
         } else {
             return Some(0);
@@ -10,12 +12,10 @@ pub fn implicit_hydrogens(atom: &Atom, bond_order_sum: usize) -> Option<usize> {
     }
 
     let element = match &atom.kind {
-        AtomKind::Element(element) => {
-            match isoelectronic_element(element, &atom.charge) {
-                Some(element) => element,
-                None => return None,
-            }
-        }
+        AtomKind::Element(element) => match isoelectronic_element(element, &atom.charge) {
+            Some(element) => element,
+            None => return None,
+        },
         _ => return None,
     };
     let targets = match default_valences(&element) {
@@ -30,10 +30,7 @@ pub fn implicit_hydrogens(atom: &Atom, bond_order_sum: usize) -> Option<usize> {
     Some(target as usize - bond_order_sum)
 }
 
-fn isoelectronic_element(
-    element: &Element,
-    charge: &Charge,
-) -> Option<Element> {
+fn isoelectronic_element(element: &Element, charge: &Charge) -> Option<Element> {
     let effective_charge: i8 = charge.into();
 
     match effective_charge {
@@ -335,6 +332,7 @@ fn select_target(query: usize, targets: &[u8]) -> Option<u8> {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::ctab::Valence;
     use pretty_assertions::assert_eq;
 
     #[test]
@@ -349,7 +347,7 @@ mod tests {
     #[test]
     fn subvalent_any_with_custom() {
         let atom = Atom {
-            valence: Some(1),
+            valence: Some(Valence::try_from(1).unwrap()),
             ..Default::default()
         };
 
@@ -359,7 +357,7 @@ mod tests {
     #[test]
     fn homovalent_any_with_custom() {
         let atom = Atom {
-            valence: Some(1),
+            valence: Some(Valence::try_from(1).unwrap()),
             ..Default::default()
         };
 
@@ -369,7 +367,7 @@ mod tests {
     #[test]
     fn supervalent_any_with_custom() {
         let atom = Atom {
-            valence: Some(1),
+            valence: Some(Valence::try_from(1).unwrap()),
             ..Default::default()
         };
 
@@ -400,7 +398,7 @@ mod tests {
     fn subvalent_element_no_defaults_custom() {
         let atom = Atom {
             kind: AtomKind::Element(Element::Sn),
-            valence: Some(2),
+            valence: Some(Valence::try_from(2).unwrap()),
             ..Default::default()
         };
 
@@ -411,7 +409,7 @@ mod tests {
     fn supervalent_element_no_defaults_custom() {
         let atom = Atom {
             kind: AtomKind::Element(Element::Sn),
-            valence: Some(2),
+            valence: Some(Valence::try_from(2).unwrap()),
             ..Default::default()
         };
 
