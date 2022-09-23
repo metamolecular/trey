@@ -16,4 +16,4 @@ Trey is not yet stable. Patch version never introduce breaking changes, but mino
 
 ## License and Copyright
 
-Vek is distributed under the terms of the MIT License. See [LICENSE](LICENSE) and [COPYRIGHT](COPYRIGHT) for details.
+Trey is distributed under the terms of the MIT License. See [LICENSE](LICENSE) and [COPYRIGHT](COPYRIGHT) for details.
