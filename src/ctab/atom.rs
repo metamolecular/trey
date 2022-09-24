@@ -1,6 +1,8 @@
 use std::fmt;
 
-use super::{AtomKind, AttachmentPoint, Charge, Coordinate, Error, Index, Valence};
+use super::{
+    AtomKind, AttachmentPoint, Charge, Coordinate, Error, Index, Valence,
+};
 
 #[derive(PartialEq, Debug, Default, Clone)]
 pub struct Atom {
@@ -81,10 +83,12 @@ impl Atom {
         }
 
         let element = match &self.kind {
-            AtomKind::Element(element) => match element.isoelectronic(&self.charge) {
-                Some(element) => element,
-                None => return None,
-            },
+            AtomKind::Element(element) => {
+                match element.isoelectronic(&self.charge) {
+                    Some(element) => element,
+                    None => return None,
+                }
+            }
             _ => return None,
         };
 
@@ -123,7 +127,8 @@ impl Atom {
             return Ok(());
         }
 
-        let new_valence = Valence::try_from(virtual_hydrogens + bond_order_sum)?;
+        let new_valence =
+            Valence::try_from(virtual_hydrogens + bond_order_sum)?;
 
         self.valence.replace(new_valence);
 
@@ -261,7 +266,9 @@ mod to_string {
     #[test]
     fn rgroups() {
         let atom = Atom {
-            kind: AtomKind::Rgroup(vec!["13".try_into().unwrap(), "42".try_into().unwrap()].into()),
+            kind: AtomKind::Rgroup(
+                vec!["13".try_into().unwrap(), "42".try_into().unwrap()].into(),
+            ),
             ..Default::default()
         };
 

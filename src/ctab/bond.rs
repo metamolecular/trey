@@ -12,7 +12,11 @@ pub struct Bond {
 }
 
 impl Bond {
-    pub fn single(id: usize, atom1: usize, atom2: usize) -> Result<Self, Error> {
+    pub fn single(
+        id: usize,
+        atom1: usize,
+        atom2: usize,
+    ) -> Result<Self, Error> {
         Ok(Self {
             index: id.try_into()?,
             atom1: atom1.try_into()?,

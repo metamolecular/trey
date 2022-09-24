@@ -66,10 +66,16 @@ impl fmt::Display for Collection {
             match self {
                 Collection::AbsoluteStereo(indexes) =>
                     format!("MDLV30/STEABS ATOMS={}", write_indexes(indexes)),
-                Collection::RacemicStereo(index, indexes) =>
-                    format!("MDLV30/STERAC{} ATOMS={}", index, write_indexes(indexes)),
-                Collection::RelativeStereo(index, indexes) =>
-                    format!("MDLV30/STEREL{} ATOMS={}", index, write_indexes(indexes)),
+                Collection::RacemicStereo(index, indexes) => format!(
+                    "MDLV30/STERAC{} ATOMS={}",
+                    index,
+                    write_indexes(indexes)
+                ),
+                Collection::RelativeStereo(index, indexes) => format!(
+                    "MDLV30/STEREL{} ATOMS={}",
+                    index,
+                    write_indexes(indexes)
+                ),
             }
         )
     }
@@ -140,9 +146,12 @@ mod merge {
 
     #[test]
     fn absolute_racemic() {
-        let mut target = Collection::AbsoluteStereo(vec!["1".try_into().unwrap()]);
-        let mut source =
-            Collection::RacemicStereo("1".try_into().unwrap(), vec!["2".try_into().unwrap()]);
+        let mut target =
+            Collection::AbsoluteStereo(vec!["1".try_into().unwrap()]);
+        let mut source = Collection::RacemicStereo(
+            "1".try_into().unwrap(),
+            vec!["2".try_into().unwrap()],
+        );
 
         assert_eq!(target.merge(&mut source), false);
         assert_eq!(
@@ -153,49 +162,71 @@ mod merge {
 
     #[test]
     fn absolute_absolute() {
-        let mut target = Collection::AbsoluteStereo(vec!["1".try_into().unwrap()]);
-        let mut source = Collection::AbsoluteStereo(vec!["2".try_into().unwrap()]);
+        let mut target =
+            Collection::AbsoluteStereo(vec!["1".try_into().unwrap()]);
+        let mut source =
+            Collection::AbsoluteStereo(vec!["2".try_into().unwrap()]);
 
         assert_eq!(target.merge(&mut source), true);
         assert_eq!(
             target,
-            Collection::AbsoluteStereo(vec!["1".try_into().unwrap(), "2".try_into().unwrap(),])
+            Collection::AbsoluteStereo(vec![
+                "1".try_into().unwrap(),
+                "2".try_into().unwrap(),
+            ])
         )
     }
 
     #[test]
     fn racemic_absolute() {
-        let mut target =
-            Collection::RacemicStereo("1".try_into().unwrap(), vec!["2".try_into().unwrap()]);
-        let mut source = Collection::AbsoluteStereo(vec!["2".try_into().unwrap()]);
+        let mut target = Collection::RacemicStereo(
+            "1".try_into().unwrap(),
+            vec!["2".try_into().unwrap()],
+        );
+        let mut source =
+            Collection::AbsoluteStereo(vec!["2".try_into().unwrap()]);
 
         assert_eq!(target.merge(&mut source), false);
         assert_eq!(
             target,
-            Collection::RacemicStereo("1".try_into().unwrap(), vec!["2".try_into().unwrap()])
+            Collection::RacemicStereo(
+                "1".try_into().unwrap(),
+                vec!["2".try_into().unwrap()]
+            )
         )
     }
 
     #[test]
     fn racemic_racemic_different_group() {
-        let mut target =
-            Collection::RacemicStereo("1".try_into().unwrap(), vec!["2".try_into().unwrap()]);
-        let mut source =
-            Collection::RacemicStereo("2".try_into().unwrap(), vec!["2".try_into().unwrap()]);
+        let mut target = Collection::RacemicStereo(
+            "1".try_into().unwrap(),
+            vec!["2".try_into().unwrap()],
+        );
+        let mut source = Collection::RacemicStereo(
+            "2".try_into().unwrap(),
+            vec!["2".try_into().unwrap()],
+        );
 
         assert_eq!(target.merge(&mut source), false);
         assert_eq!(
             target,
-            Collection::RacemicStereo("1".try_into().unwrap(), vec!["2".try_into().unwrap()])
+            Collection::RacemicStereo(
+                "1".try_into().unwrap(),
+                vec!["2".try_into().unwrap()]
+            )
         )
     }
 
     #[test]
     fn racemic_racemic_same_group() {
-        let mut target =
-            Collection::RacemicStereo("1".try_into().unwrap(), vec!["1".try_into().unwrap()]);
-        let mut source =
-            Collection::RacemicStereo("1".try_into().unwrap(), vec!["2".try_into().unwrap()]);
+        let mut target = Collection::RacemicStereo(
+            "1".try_into().unwrap(),
+            vec!["1".try_into().unwrap()],
+        );
+        let mut source = Collection::RacemicStereo(
+            "1".try_into().unwrap(),
+            vec!["2".try_into().unwrap()],
+        );
 
         assert_eq!(target.merge(&mut source), true);
         assert_eq!(
@@ -209,37 +240,54 @@ mod merge {
 
     #[test]
     fn relative_absolute() {
-        let mut target =
-            Collection::RelativeStereo("1".try_into().unwrap(), vec!["2".try_into().unwrap()]);
-        let mut source = Collection::AbsoluteStereo(vec!["2".try_into().unwrap()]);
+        let mut target = Collection::RelativeStereo(
+            "1".try_into().unwrap(),
+            vec!["2".try_into().unwrap()],
+        );
+        let mut source =
+            Collection::AbsoluteStereo(vec!["2".try_into().unwrap()]);
 
         assert_eq!(target.merge(&mut source), false);
         assert_eq!(
             target,
-            Collection::RelativeStereo("1".try_into().unwrap(), vec!["2".try_into().unwrap()])
+            Collection::RelativeStereo(
+                "1".try_into().unwrap(),
+                vec!["2".try_into().unwrap()]
+            )
         )
     }
 
     #[test]
     fn relative_relative_different_group() {
-        let mut target =
-            Collection::RelativeStereo("1".try_into().unwrap(), vec!["2".try_into().unwrap()]);
-        let mut source =
-            Collection::RelativeStereo("2".try_into().unwrap(), vec!["2".try_into().unwrap()]);
+        let mut target = Collection::RelativeStereo(
+            "1".try_into().unwrap(),
+            vec!["2".try_into().unwrap()],
+        );
+        let mut source = Collection::RelativeStereo(
+            "2".try_into().unwrap(),
+            vec!["2".try_into().unwrap()],
+        );
 
         assert_eq!(target.merge(&mut source), false);
         assert_eq!(
             target,
-            Collection::RelativeStereo("1".try_into().unwrap(), vec!["2".try_into().unwrap()])
+            Collection::RelativeStereo(
+                "1".try_into().unwrap(),
+                vec!["2".try_into().unwrap()]
+            )
         )
     }
 
     #[test]
     fn relative_relative_same_group() {
-        let mut target =
-            Collection::RelativeStereo("1".try_into().unwrap(), vec!["1".try_into().unwrap()]);
-        let mut source =
-            Collection::RelativeStereo("1".try_into().unwrap(), vec!["2".try_into().unwrap()]);
+        let mut target = Collection::RelativeStereo(
+            "1".try_into().unwrap(),
+            vec!["1".try_into().unwrap()],
+        );
+        let mut source = Collection::RelativeStereo(
+            "1".try_into().unwrap(),
+            vec!["2".try_into().unwrap()],
+        );
 
         assert_eq!(target.merge(&mut source), true);
         assert_eq!(
@@ -275,7 +323,8 @@ mod contains {
 
     #[test]
     fn empty_racemic() {
-        let collection = Collection::RacemicStereo("1".try_into().unwrap(), vec![]);
+        let collection =
+            Collection::RacemicStereo("1".try_into().unwrap(), vec![]);
         let index = "1".try_into().unwrap();
 
         assert_eq!(collection.contains(&index), false)
@@ -284,14 +333,18 @@ mod contains {
     #[test]
     fn in_racemic() {
         let index: Index = "1".try_into().unwrap();
-        let collection = Collection::RacemicStereo("42".try_into().unwrap(), vec![index.clone()]);
+        let collection = Collection::RacemicStereo(
+            "42".try_into().unwrap(),
+            vec![index.clone()],
+        );
 
         assert_eq!(collection.contains(&index), true)
     }
 
     #[test]
     fn empty_relative() {
-        let collection = Collection::RelativeStereo("1".try_into().unwrap(), vec![]);
+        let collection =
+            Collection::RelativeStereo("1".try_into().unwrap(), vec![]);
         let index = "1".try_into().unwrap();
 
         assert_eq!(collection.contains(&index), false)
@@ -300,7 +353,10 @@ mod contains {
     #[test]
     fn in_relative() {
         let index: Index = "1".try_into().unwrap();
-        let collection = Collection::RelativeStereo("42".try_into().unwrap(), vec![index.clone()]);
+        let collection = Collection::RelativeStereo(
+            "42".try_into().unwrap(),
+            vec![index.clone()],
+        );
 
         assert_eq!(collection.contains(&index), true)
     }

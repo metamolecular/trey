@@ -28,8 +28,8 @@ mod tests {
 
     use super::*;
     use crate::ctab::{
-        Atom, Bond, BondConfiguration, Collection, Coordinate, CrossingBond, Index, Substructure,
-        SubstructureKind, Superatom,
+        Atom, Bond, BondConfiguration, Collection, Coordinate, CrossingBond,
+        Index, Substructure, SubstructureKind, Superatom,
     };
 
     #[test]
@@ -65,7 +65,7 @@ mod tests {
                 ..Default::default()
             }],
             collections: vec![Collection::AbsoluteStereo(vec![
-                Index::try_from("2").unwrap()
+                Index::try_from("2").unwrap(),
             ])],
             substructures: vec![Substructure {
                 index: Index::try_from("3").unwrap(),

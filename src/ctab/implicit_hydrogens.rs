@@ -12,10 +12,12 @@ pub fn implicit_hydrogens(atom: &Atom, bond_order_sum: usize) -> Option<usize> {
     }
 
     let element = match &atom.kind {
-        AtomKind::Element(element) => match isoelectronic_element(element, &atom.charge) {
-            Some(element) => element,
-            None => return None,
-        },
+        AtomKind::Element(element) => {
+            match isoelectronic_element(element, &atom.charge) {
+                Some(element) => element,
+                None => return None,
+            }
+        }
         _ => return None,
     };
     let targets = match default_valences(&element) {
@@ -30,7 +32,10 @@ pub fn implicit_hydrogens(atom: &Atom, bond_order_sum: usize) -> Option<usize> {
     Some(target as usize - bond_order_sum)
 }
 
-fn isoelectronic_element(element: &Element, charge: &Charge) -> Option<Element> {
+fn isoelectronic_element(
+    element: &Element,
+    charge: &Charge,
+) -> Option<Element> {
     let effective_charge: i8 = charge.into();
 
     match effective_charge {

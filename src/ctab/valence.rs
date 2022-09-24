@@ -29,7 +29,9 @@ impl Valence {
                     if virtual_hydrogens == 0 {
                         Ok(None)
                     } else {
-                        Ok(Some(Self::try_from(virtual_hydrogens + bond_order_sum)?))
+                        Ok(Some(Self::try_from(
+                            virtual_hydrogens + bond_order_sum,
+                        )?))
                     }
                 }
             },
@@ -85,7 +87,12 @@ mod compute {
         let bond_order_sum = 0;
 
         assert_eq!(
-            Valence::compute(&element, &charge, virtual_hydrogens, bond_order_sum),
+            Valence::compute(
+                &element,
+                &charge,
+                virtual_hydrogens,
+                bond_order_sum
+            ),
             Ok(None)
         )
     }
@@ -98,7 +105,12 @@ mod compute {
         let bond_order_sum = 1;
 
         assert_eq!(
-            Valence::compute(&element, &charge, virtual_hydrogens, bond_order_sum),
+            Valence::compute(
+                &element,
+                &charge,
+                virtual_hydrogens,
+                bond_order_sum
+            ),
             Ok(None)
         )
     }
@@ -111,7 +123,12 @@ mod compute {
         let bond_order_sum = 0;
 
         assert_eq!(
-            Valence::compute(&element, &charge, virtual_hydrogens, bond_order_sum),
+            Valence::compute(
+                &element,
+                &charge,
+                virtual_hydrogens,
+                bond_order_sum
+            ),
             Ok(Some(Valence(1)))
         )
     }
@@ -124,7 +141,12 @@ mod compute {
         let bond_order_sum = 1;
 
         assert_eq!(
-            Valence::compute(&element, &charge, virtual_hydrogens, bond_order_sum),
+            Valence::compute(
+                &element,
+                &charge,
+                virtual_hydrogens,
+                bond_order_sum
+            ),
             Ok(Some(Valence(2)))
         )
     }
@@ -137,7 +159,12 @@ mod compute {
         let bond_order_sum = 0;
 
         assert_eq!(
-            Valence::compute(&element, &charge, virtual_hydrogens, bond_order_sum),
+            Valence::compute(
+                &element,
+                &charge,
+                virtual_hydrogens,
+                bond_order_sum
+            ),
             Ok(Some(Valence(0)))
         )
     }
@@ -150,7 +177,12 @@ mod compute {
         let bond_order_sum = 1;
 
         assert_eq!(
-            Valence::compute(&element, &charge, virtual_hydrogens, bond_order_sum),
+            Valence::compute(
+                &element,
+                &charge,
+                virtual_hydrogens,
+                bond_order_sum
+            ),
             Ok(Some(Valence(2)))
         )
     }
@@ -163,7 +195,12 @@ mod compute {
         let bond_order_sum = 0;
 
         assert_eq!(
-            Valence::compute(&element, &charge, virtual_hydrogens, bond_order_sum),
+            Valence::compute(
+                &element,
+                &charge,
+                virtual_hydrogens,
+                bond_order_sum
+            ),
             Ok(Some(Valence(0)))
         )
     }
@@ -176,7 +213,12 @@ mod compute {
         let bond_order_sum = 3;
 
         assert_eq!(
-            Valence::compute(&element, &charge, virtual_hydrogens, bond_order_sum),
+            Valence::compute(
+                &element,
+                &charge,
+                virtual_hydrogens,
+                bond_order_sum
+            ),
             Ok(None)
         )
     }
@@ -189,7 +231,12 @@ mod compute {
         let bond_order_sum = 15;
 
         assert_eq!(
-            Valence::compute(&element, &charge, virtual_hydrogens, bond_order_sum),
+            Valence::compute(
+                &element,
+                &charge,
+                virtual_hydrogens,
+                bond_order_sum
+            ),
             Err(Error::InvalidValence)
         )
     }
@@ -202,7 +249,12 @@ mod compute {
         let bond_order_sum = 2;
 
         assert_eq!(
-            Valence::compute(&element, &charge, virtual_hydrogens, bond_order_sum),
+            Valence::compute(
+                &element,
+                &charge,
+                virtual_hydrogens,
+                bond_order_sum
+            ),
             Ok(None)
         )
     }

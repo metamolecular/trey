@@ -10,7 +10,10 @@ impl IndexList {
         self.0.is_empty()
     }
 
-    pub fn reindex(&mut self, map: &mut HashMap<Index, Index>) -> Result<(), Error> {
+    pub fn reindex(
+        &mut self,
+        map: &mut HashMap<Index, Index>,
+    ) -> Result<(), Error> {
         Ok(for old in self.0.iter_mut() {
             std::mem::swap(old, map.get_mut(&old).ok_or(Error::MissingRgroup)?);
         })
