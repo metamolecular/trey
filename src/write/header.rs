@@ -10,19 +10,20 @@ pub fn header(header: &Header) -> Vec<String> {
             "{}{}{}{}{}{}{}",
             match &header.initials {
                 Some(initials) => initials.iter().collect::<String>(),
-                None => "  ".into()
+                None => "  ".into(),
             },
             match &header.program {
                 Some(program) => program.iter().collect::<String>(),
-                None => " ".repeat(8).into()
+                None => " ".repeat(8).into(),
             },
             match &header.timestamp {
                 Some(timestamp) => timestamp.iter().collect::<String>(),
-                None => " ".repeat(10).into()
+                None => " ".repeat(10).into(),
             },
             match &header.dimensional_code {
-                Some(dimensional_code) => dimensional_code.iter().collect::<String>(),
-                None => "  ".into()
+                Some(dimensional_code) =>
+                    dimensional_code.iter().collect::<String>(),
+                None => "  ".into(),
             },
             if let Some(scaling_factors) = &header.scaling_factors {
                 scaling_factors.to_string()
@@ -31,7 +32,7 @@ pub fn header(header: &Header) -> Vec<String> {
             },
             match &header.energy {
                 Some(energy) => energy.to_string(),
-                None => " ".repeat(10).into()
+                None => " ".repeat(10).into(),
             },
             header.registry_number.iter().collect::<String>(),
         )

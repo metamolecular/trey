@@ -1,4 +1,4 @@
-use super::{Comment, ScalingFactors, Float12, Name};
+use super::{Comment, Float12, Name, ScalingFactors};
 
 #[derive(Debug, PartialEq, Default)]
 pub struct Header {
