@@ -1,13 +1,27 @@
 mod comment;
 mod dimensional_code;
 mod error;
+mod float10;
+mod float12;
+mod fortran_float;
+mod fortran_int;
 mod header;
+mod i2;
+mod i6;
 mod name;
+mod scaling_factors;
 mod timestamp;
 
 pub use comment::Comment;
 pub use dimensional_code::DimensionalCode;
 pub use error::Error;
+pub use float10::Float10;
+pub use float12::Float12;
+pub use fortran_float::fortran_float;
+pub use fortran_int::fortran_int;
 pub use header::Header;
+pub use i2::I2;
+pub use i6::I6;
 pub use name::Name;
+pub use scaling_factors::ScalingFactors;
 pub use timestamp::Timestamp;
